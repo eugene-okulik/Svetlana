@@ -16,7 +16,7 @@ last_tuple_element = my_dict['tuple'][-1]
 my_dict['list'].append(555)
 my_dict['list'].pop(1)
 
-my_dict['dict']['i am a tuple'] = ('Sometimes', 'I', 'feel', 'like', 'a', 'tuple')
+my_dict['dict'][('i am a tuple',)] = 'Sometimes I feel like a tuple'
 del my_dict['dict']['key1']
 
 my_dict['set'].add(777)
