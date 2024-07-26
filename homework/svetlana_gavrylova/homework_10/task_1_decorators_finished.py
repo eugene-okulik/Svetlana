@@ -2,7 +2,7 @@ def finish_me(func):
 
     def wrapper(*args):
         result = func(*args)
-        print(f'Finished')
+        print('Finished')
         return result
 
     return wrapper
