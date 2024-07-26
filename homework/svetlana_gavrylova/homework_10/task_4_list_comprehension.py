@@ -13,5 +13,8 @@ PRICE_LIST = '''тетрадь 50р
 
 # in one line:
 form_dict = {key: int(value) for key, value in [item[:-1].split() for item in PRICE_LIST.split('\n')]}
+# or this one - not sure which one is better:
+new_list = {x.split(' ')[0]: int(x.split(' ')[1][:-1]) for x in PRICE_LIST.split('\n')}
 
 print(form_dict)
+print(new_list)
