@@ -93,7 +93,7 @@ class Bouquet:
         return [floret for floret in self.__flowers if getattr(floret, attribute) == value]
 
     def __str__(self):
-        return f"Bouquet with flowers:\n" + "\n".join(str(floret) for floret in self.__flowers)
+        return "Bouquet with flowers:\n" + "\n".join(str(floret) for floret in self.__flowers)
 
 
 bouquet = Bouquet(
