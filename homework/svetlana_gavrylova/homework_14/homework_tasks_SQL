@@ -1,0 +1,105 @@
+
+1. Создание студента
+
+    INSERT INTO students (name, second_name) VALUES ('Lana', 'Night')
+
+2. Выдача книг студенту
+
+    INSERT INTO books (title, taken_by_student_id) VALUES ('The Word Processor of the Gods', 1868)
+    INSERT INTO books (title, taken_by_student_id) VALUES ('Jonathan Livingston Seagull', 1868)
+    INSERT INTO books (title, taken_by_student_id) VALUES ('The Mysterious Stranger', 1868)
+    INSERT INTO books (title, taken_by_student_id) VALUES ('Science in Action', 1868)
+
+
+3. Создание группы и добавление студента в группу
+
+    INSERT INTO `groups` (title, start_date, end_date) VALUES ('LanaNight group', 'Jul 2024', 'Nov 2024')
+    UPDATE students s SET s.group_id = 1759 WHERE s.id = 1868
+
+4. Создание предметов
+
+    INSERT INTO subjets (title) VALUES ('Science')
+    INSERT INTO subjets (title) VALUES ('Literature')
+    INSERT INTO subjets (title) VALUES ('Philosophy')
+
+5. Создание уроков
+
+    INSERT INTO lessons (title, subject_id) VALUES ('Introduction to Ethics', 2458)
+    INSERT INTO lessons (title, subject_id) VALUES ('Existentialism and Human Freedom', 2458)
+    INSERT INTO lessons (title, subject_id) VALUES ('Shakespearean Tragedies', 2457)
+    INSERT INTO lessons (title, subject_id) VALUES ('Modernist Literature', 2457)
+    INSERT INTO lessons (title, subject_id) VALUES ('Fundamentals of Quantum Mechanics', 2456)
+    INSERT INTO lessons (title, subject_id) VALUES ('Introduction to Genetics', 2456)
+
+6. Создание оценок
+    INSERT INTO marks (value, lesson_id, student_id) VALUES (10, 5233, 1868)
+    INSERT INTO marks (value, lesson_id, student_id) VALUES (9, 5232, 1868)
+    INSERT INTO marks (value, lesson_id, student_id) VALUES (12, 5231, 1868)
+    INSERT INTO marks (value, lesson_id, student_id) VALUES (8, 5230, 1868)
+    INSERT INTO marks (value, lesson_id, student_id) VALUES (12, 5229, 1868)
+    INSERT INTO marks (value, lesson_id, student_id) VALUES (7, 5228, 1868)
+
+Получите информацию из базы данных:
+
+1. Оценки студента
+
+    SELECT s.name, s.second_name, m.value
+    FROM students s
+    join marks m
+    on s.id = m.student_id
+    WHERE s.id = 1868
+
+2. книги, которые находятся у студента
+
+    SELECT s.name, s.second_name, b.title
+    FROM students s
+    join books b
+    on s.id = b.taken_by_student_id
+    WHERE s.id = 1868
+
+3. Для вашего студента выведите всё, что о нем есть в базе: группа,
+книги, оценки с названиями занятий и предметов (всё одним запросом с использованием Join)
+
+    3.1
+        SELECT
+        g.title AS 'GROUP_NAME',
+        s.id as 'STUDENT_ID',
+        s.name as 'STUDENT_NAME',
+        s.second_name as 'STUDENT_SECOND_NAME',
+        b.title as 'BOOK_TITLE',
+        sub.title as 'SUBJECT_TITLE',
+        l.title as 'LESSON_TITLE',
+        m.value as 'MARKS'
+        FROM students s
+        JOIN `groups` g ON s.group_id = g.id
+        JOIN books b ON s.id = b.taken_by_student_id
+        JOIN marks m ON s.id = m.student_id
+        JOIN lessons l ON m.lesson_id = l.id
+        JOIN subjets sub ON sub.id = l.subject_id
+        WHERE s.id = 1868
+
+    3.2
+        SELECT
+        g.title AS 'GROUP_NAME',
+        s.id as 'STUDENT_ID',
+        s.name as 'STUDENT_NAME',
+        s.second_name as 'STUDENT_SECOND_NAME',
+        sub.title as 'SUBJECT_TITLE',
+        l.title as 'LESSON_TITLE',
+        m.value as 'MARKS',
+        COUNT(b.id) as 'BOOK_COUNT'
+        FROM students s
+        JOIN `groups` g ON s.group_id = g.id
+        JOIN marks m ON s.id = m.student_id
+        JOIN lessons l ON m.lesson_id = l.id
+        JOIN subjets sub ON sub.id = l.subject_id
+        JOIN books b ON s.id = b.taken_by_student_id
+        WHERE s.id = 1868
+        GROUP BY
+            s.id,
+            g.title,
+            s.name,
+            s.second_name,
+            m.value,
+            sub.title,
+            l.title
