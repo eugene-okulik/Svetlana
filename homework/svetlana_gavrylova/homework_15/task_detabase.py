@@ -14,7 +14,8 @@ query = "INSERT INTO students (name, second_name) VALUES (%s, %s)"
 cursor.execute(query, ('Lana_Python', 'Night_Python'))
 student_id = cursor.lastrowid
 
-cursor.execute(f'SELECT * from students WHERE id = {student_id}')
+query = "SELECT * FROM students WHERE id = %s"
+cursor.execute(query, (student_id,))
 print(f"Student: {cursor.fetchone()}")
 
 # 2nd task: Create books
