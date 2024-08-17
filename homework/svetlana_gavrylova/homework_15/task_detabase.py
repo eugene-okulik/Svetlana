@@ -14,13 +14,11 @@ query = "INSERT INTO students (name, second_name) VALUES (%s, %s)"
 cursor.execute(query, ('Lana_Python', 'Night_Python'))
 student_id = cursor.lastrowid
 
-query = "SELECT * FROM students WHERE id = %s"
-cursor.execute(query, (student_id,))
+cursor.execute("SELECT * FROM students WHERE id = %s", (student_id,))
 print(f"Student: {cursor.fetchone()}")
 
 # 2nd task: Create books
-query = f"INSERT INTO books (title, taken_by_student_id) VALUES (%s, %s)"
-
+query = "INSERT INTO books (title, taken_by_student_id) VALUES (%s, %s)"
 cursor.executemany(
     query, [
         ('Python for beginners_2', student_id),
@@ -35,7 +33,7 @@ cursor.execute(query, ('LanaNightPython group', '2024-07-01', '2024-11-01'))
 group_id = cursor.lastrowid
 
 # 3rd task, part 2: Add student to group
-query = "UPDATE students s SET s.group_id = %s WHERE s.id = %s"
+query = "UPDATE students SET group_id = %s WHERE id = %s"
 cursor.execute(query, (group_id, student_id))
 
 # 4th task: Create subjects
@@ -82,14 +80,13 @@ cursor.executemany(
 
 # 7th task: Get data for student
 # 7.1: Get student's marks
-query = f"""
+query = """
 SELECT s.name, s.second_name, m.value
 FROM students s
-join marks m
-on s.id = m.student_id
-WHERE s.id = {student_id}
+JOIN marks m ON s.id = m.student_id
+WHERE s.id = %s
 """
-cursor.execute(query)
+cursor.execute(query, (student_id,))
 data = cursor.fetchall()
 
 print('Marks:')
@@ -97,14 +94,13 @@ for item in data:
     print(item)
 
 # 7.2: Get student's books
-query = f"""
+query = """
 SELECT s.name, s.second_name, b.title
-    FROM students s
-    join books b
-    on s.id = b.taken_by_student_id
-    WHERE s.id = {student_id}
+FROM students s
+JOIN books b ON s.id = b.taken_by_student_id
+WHERE s.id = %s
 """
-cursor.execute(query)
+cursor.execute(query, (student_id,))
 data = cursor.fetchall()
 
 print('Books:')
@@ -112,50 +108,49 @@ for item in data:
     print(item)
 
 # 7.3.1: Get student's all data
-query = f"""
+query = """
 SELECT
-        g.title AS 'GROUP_NAME',
-        s.id as 'STUDENT_ID',
-        s.name as 'STUDENT_NAME',
-        s.second_name as 'STUDENT_SECOND_NAME',
-        b.title as 'BOOK_TITLE',
-        sub.title as 'SUBJECT_TITLE',
-        l.title as 'LESSON_TITLE',
-        m.value as 'MARKS'
-        FROM students s
-        JOIN `groups` g ON s.group_id = g.id
-        JOIN books b ON s.id = b.taken_by_student_id
-        JOIN marks m ON s.id = m.student_id
-        JOIN lessons l ON m.lesson_id = l.id
-        JOIN subjets sub ON sub.id = l.subject_id
-        WHERE s.id = {student_id}   
+    g.title AS 'GROUP_NAME',
+    s.id as 'STUDENT_ID',
+    s.name as 'STUDENT_NAME',
+    s.second_name as 'STUDENT_SECOND_NAME',
+    b.title as 'BOOK_TITLE',
+    sub.title as 'SUBJECT_TITLE',
+    l.title as 'LESSON_TITLE',
+    m.value as 'MARKS'
+FROM students s
+JOIN `groups` g ON s.group_id = g.id
+JOIN books b ON s.id = b.taken_by_student_id
+JOIN marks m ON s.id = m.student_id
+JOIN lessons l ON m.lesson_id = l.id
+JOIN subjets sub ON sub.id = l.subject_id
+WHERE s.id = %s
 """
-
-cursor.execute(query)
+cursor.execute(query, (student_id,))
 data = cursor.fetchall()
 
 print("All data:")
 for item in data:
     print(item)
 
-# 7.3.2: Get student's all data
-query = f"""
+# 7.3.2: Get student's all data with book count
+query = """
 SELECT
-g.title AS 'GROUP_NAME',
-s.id as 'STUDENT_ID',
-s.name as 'STUDENT_NAME',
-s.second_name as 'STUDENT_SECOND_NAME',
-sub.title as 'SUBJECT_TITLE',
-l.title as 'LESSON_TITLE',
-m.value as 'MARKS',
-COUNT(b.id) as 'BOOK_COUNT'
+    g.title AS 'GROUP_NAME',
+    s.id as 'STUDENT_ID',
+    s.name as 'STUDENT_NAME',
+    s.second_name as 'STUDENT_SECOND_NAME',
+    sub.title as 'SUBJECT_TITLE',
+    l.title as 'LESSON_TITLE',
+    m.value as 'MARKS',
+    COUNT(b.id) as 'BOOK_COUNT'
 FROM students s
 JOIN `groups` g ON s.group_id = g.id
 JOIN marks m ON s.id = m.student_id
 JOIN lessons l ON m.lesson_id = l.id
 JOIN subjets sub ON sub.id = l.subject_id
 JOIN books b ON s.id = b.taken_by_student_id
-WHERE s.id = {student_id}
+WHERE s.id = %s
 GROUP BY
     s.id,
     g.title,
@@ -165,8 +160,7 @@ GROUP BY
     sub.title,
     l.title
 """
-
-cursor.execute(query)
+cursor.execute(query, (student_id,))
 data = cursor.fetchall()
 
 print("All data 2:")
