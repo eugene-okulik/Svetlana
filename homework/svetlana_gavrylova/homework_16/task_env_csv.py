@@ -5,7 +5,6 @@ import dotenv
 
 import mysql.connector as mysql
 
-
 base_path = os.path.dirname(__file__)
 homework_path = os.path.dirname(os.path.dirname(base_path))
 file_path = os.path.join(homework_path, 'eugene_okulik', 'Lesson_16', 'hw_data', 'data.csv')
@@ -33,13 +32,13 @@ for student, f_data in students.items():
 
     query = """
     SELECT 
-    s.name as 'name', 
-    s.second_name as 'second_name', 
-    g.title AS 'group_title',
-    b.title as 'book_title',
-    sub.title as 'subject_title', 
-    l.title as 'lesson_title',
-    m.value as 'mark_value'
+        s.name as 'name', 
+        s.second_name as 'second_name', 
+        g.title AS 'group_title',
+        b.title as 'book_title',
+        sub.title as 'subject_title', 
+        l.title as 'lesson_title',
+        m.value as 'mark_value'
     FROM students s 
     JOIN `groups` g ON s.group_id = g.id 
     JOIN books b ON s.id = b.taken_by_student_id 
