@@ -31,20 +31,20 @@ for student, f_data in students.items():
     name, second_name = student
 
     query = """
-    SELECT 
-        s.name as 'name', 
-        s.second_name as 'second_name', 
+    SELECT
+        s.name as 'name',
+        s.second_name as 'second_name',
         g.title AS 'group_title',
         b.title as 'book_title',
-        sub.title as 'subject_title', 
+        sub.title as 'subject_title',
         l.title as 'lesson_title',
         m.value as 'mark_value'
-    FROM students s 
-    JOIN `groups` g ON s.group_id = g.id 
-    JOIN books b ON s.id = b.taken_by_student_id 
+    FROM students s
+    JOIN `groups` g ON s.group_id = g.id
+    JOIN books b ON s.id = b.taken_by_student_id
     JOIN marks m ON s.id = m.student_id
-    JOIN lessons l ON m.lesson_id = l.id 
-    JOIN subjets sub ON sub.id = l.subject_id 
+    JOIN lessons l ON m.lesson_id = l.id
+    JOIN subjets sub ON sub.id = l.subject_id
     WHERE s.name = %s AND s.second_name = %s
     """
 
