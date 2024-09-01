@@ -131,9 +131,8 @@ payload_update['data']['color'] = 'silver'
 updated_put, curl_5 = update_object(update_id, payload_update)
 print(f'Update object:\ncurl: {curl_5}\n{updated_put}\n')
 
-payload_partial = {
-   "name": "Apple MacBook Pro 16 (Updated Name PARTIAL)"
-}
+payload_partial = {"name": "Apple MacBook Pro 16 (Updated Name PARTIAL)"}
+
 payload_update['name'] = payload_partial['name']
 updated_patch, curl_6 = update_partial_object(update_id, payload_partial, expected_payload=payload_update)
 
