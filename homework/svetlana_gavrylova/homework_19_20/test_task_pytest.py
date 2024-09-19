@@ -1,5 +1,6 @@
 import pytest
 import task_rest_api_controller
+import allure
 
 
 class ObjectData:
@@ -16,10 +17,12 @@ def add_object(request):
     name, year, price, cpu_model, hard_disk_size, include_test_data = request.param
     response, r_curl = task_rest_api_controller.add_object(name, year, price, cpu_model, hard_disk_size)
 
+    assert response.status_code == 200, f'Status code is incorrect: {response.status_code}\n{r_curl}'
+
     if include_test_data:
-        yield response, r_curl, ObjectData(name, year, price, cpu_model, hard_disk_size)
+        yield response.json(), r_curl, ObjectData(name, year, price, cpu_model, hard_disk_size)
     else:
-        yield response, r_curl
+        yield response.json(), r_curl
 
     task_rest_api_controller.delete_object(response.json()['id'])
 
@@ -38,6 +41,9 @@ def before_each():
     print('\nAfter test.')
 
 
+@allure.feature('Posts')
+@allure.story('Manipulate posts')
+@allure.title('Создание поста')
 @pytest.mark.critical
 @pytest.mark.parametrize(
     'add_object',
@@ -49,9 +55,7 @@ def before_each():
     indirect=True
 )
 def test_add_object(add_object, start_complete, before_each):
-    response, r_curl, test_data = add_object
-    r_json = response.json()
-    assert response.status_code == 200, f'Status code is incorrect: {response.status_code}\n{r_curl}'
+    r_json, r_curl, test_data = add_object
     assert r_json['id'] is not None, f'Id is not created\n{r_curl}'
     assert r_json['name'] == test_data.name, f'Name is incorrect: {r_json["name"]}\n{r_curl}'
     assert r_json['data']['year'] == test_data.year, f'Year is incorrect: {r_json["data"]["year"]}\n{r_curl}'
@@ -60,21 +64,25 @@ def test_add_object(add_object, start_complete, before_each):
         f'CPU model is incorrect: {r_json["data"]["CPU model"]}\n{r_curl}'
 
 
+@allure.feature('Informative')
+@allure.story('Get posts')
+@allure.title('Получение поста по идентификатору')
 @pytest.mark.parametrize('add_object', [('Apple MacBook Pro 14 get id', 2022, 2000, 'i7', '1TB', False)], indirect=True)
 def test_get_single_object_by_id(add_object, before_each):
-    response, r_curl = add_object
-    r_json = response.json()
+    r_json, _ = add_object
     # get single object by id
     single, curl = task_rest_api_controller.get_single_object_by_id(r_json['id'])
     assert single.status_code == 200, f'Status code is incorrect: {single.status_code}\n{curl}'
     assert single.json()['id'] == r_json['id'], f'Id is incorrect: {single.json()["id"]}\n{curl}'
 
 
+@allure.feature('Posts')
+@allure.story('Manipulate posts')
+@allure.title('Полное обновление поста')
 @pytest.mark.medium
 @pytest.mark.parametrize('add_object', [('Apple MacBook Pro 14 update', 2022, 2000, 'i7', '1TB', False)], indirect=True)
 def test_update_object(add_object, before_each):
-    response, _ = add_object
-    r_json = response.json()
+    r_json, _ = add_object
     # update object
     payload_update = r_json
     update_id = payload_update['id']
@@ -92,12 +100,15 @@ def test_update_object(add_object, before_each):
     assert updated_json['data'] == payload_update['data'], f'Data is incorrect: {updated_json["data"]}\n{r_curl}'
 
 
+@allure.feature('Posts')
+@allure.story('Manipulate posts')
+@allure.title('Порционное обновление поста')
 @pytest.mark.parametrize(
     'add_object', [('Apple MacBook Pro 14 partial update', 2022, 2000, 'i7', '1TB', False)], indirect=True
 )
 def test_update_partial_object(add_object, before_each):
-    response, _ = add_object
-    payload_update = response.json()
+    r_json, _ = add_object
+    payload_update = r_json
     # update partial object
     payload_partial = {"name": "Apple MacBook Pro 16 (Updated Name PARTIAL)"}
     payload_update['name'] = payload_partial['name']
@@ -113,10 +124,12 @@ def test_update_partial_object(add_object, before_each):
     assert updated_json['data'] == payload_update['data'], f'Data is incorrect: {updated_json["data"]}\n{r_curl}'
 
 
+@allure.feature('Posts')
+@allure.story('Manipulate posts')
+@allure.title('Удаление поста')
 @pytest.mark.parametrize('add_object', [('Apple MacBook Pro 14 delete', 2022, 2000, 'i7', '1TB', False)], indirect=True)
 def test_delete_object(add_object, before_each):
-    response, _ = add_object
-    r_json = response.json()
+    r_json, _ = add_object
     # delete object
     delete_response, r_curl = task_rest_api_controller.delete_object(r_json['id'])
     assert delete_response.status_code == 200, f'Status code is incorrect: {delete_response.status_code}\n{r_curl}'
@@ -128,6 +141,9 @@ def test_delete_object(add_object, before_each):
     assert single.json()['error'] == f'Oject with id={r_json["id"]} was not found.', f'Object was not deleted\n{curl}'
 
 
+@allure.feature('Informative')
+@allure.story('Get posts')
+@allure.title('Получение всех постов')
 def test_get_list(before_each):
     get_list, curl = task_rest_api_controller.get_all_list()
 
@@ -136,6 +152,9 @@ def test_get_list(before_each):
     assert len(get_list.json()) > 0, f'List is empty\n{curl}'
 
 
+@allure.feature('Informative')
+@allure.story('Get posts')
+@allure.title('Получение постов по идентификаторам')
 def test_get_list_by_ids(before_each):
     get_list_by_id, curl = task_rest_api_controller.get_list_by_ids(1, 2, 3)
 
