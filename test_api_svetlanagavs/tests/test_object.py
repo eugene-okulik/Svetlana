@@ -96,12 +96,10 @@ def test_delete_object(add_object, get_single_object_by_id, delete_object):
     delete_object.delete_object(object_id)
     delete_object.check_status_code()
 
-    assert delete_object.json['message'] == f'Object with id = {object_id} has been deleted.', (
+    assert delete_object.json['message'] == f'Object with id = {object_id} has been deleted.', \
         f"Message is incorrect: {delete_object.json['message']}\n{delete_object.curl}"
-    )
 
     get_single_object_by_id.get_single_object_by_id(object_id)
     get_single_object_by_id.check_status_code(404)
-    assert get_single_object_by_id.json['error'] == f'Oject with id={object_id} was not found.', (
-            f'Object was not deleted\n{get_single_object_by_id.curl}'
-    )
+    assert get_single_object_by_id.json['error'] == f'Oject with id={object_id} was not found.', \
+        f'Object was not deleted\n{get_single_object_by_id.curl}'
