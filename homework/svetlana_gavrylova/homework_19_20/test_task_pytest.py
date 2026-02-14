@@ -138,7 +138,7 @@ def test_delete_object(add_object, before_each):
     # make sure that object was deleted
     single, curl = task_rest_api_controller.get_single_object_by_id(r_json['id'])
     assert single.status_code == 404, f'Status code is incorrect: {delete_response.status_code}\n{curl}'
-    assert single.json()['error'] == f'Oject with id={r_json["id"]} was not found.', f'Object was not deleted\n{curl}'
+    assert single.json()['error'] == f'Object with id={r_json["id"]} was not found.', f'Object was not deleted\n{curl}'
 
 
 @allure.feature('Informative')
