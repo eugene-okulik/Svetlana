@@ -52,4 +52,4 @@ def create_and_delete_meme(request, auth_headers, create_meme, delete_meme):
     yield create_meme
 
     # Try to delete, ignore if already deleted by the test
-    response = requests.delete(f'{BASE_URL}/meme/{meme_id}', headers=auth_headers)
+    requests.delete(f'{BASE_URL}/meme/{meme_id}', headers=auth_headers)
