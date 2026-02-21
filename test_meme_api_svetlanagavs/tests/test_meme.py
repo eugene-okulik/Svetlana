@@ -19,20 +19,18 @@ def test_authorize():
     auth = Authorize()
     token = auth.authorize('test_user')
     auth.check_status_code()
-    assert token is not None
+    auth.check_token_is_not_none(token)
 
 
 def test_token_is_alive(auth_headers):
     auth = Authorize()
     token = auth_headers['Authorization']
-    result = auth.check_token_is_alive(token)
-    assert result is True
+    auth.check_token_alive(token)
 
 
 def test_invalid_token_is_not_alive():
     auth = Authorize()
-    result = auth.check_token_is_alive('invalid_token_123')
-    assert result is False
+    auth.check_token_not_alive('invalid_token_123')
 
 
 """

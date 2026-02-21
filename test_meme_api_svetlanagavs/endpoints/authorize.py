@@ -21,6 +21,20 @@ class Authorize(BaseEndpoint):
         self.curl = curlify.to_curl(self.response.request)
         return self.response.status_code == 200
 
+    @allure.step('Check token is not None')
+    def check_token_is_not_none(self, token):
+        assert token is not None, f'Expected token, but got None.\n{self.curl}'
+
+    @allure.step('Check token is alive')
+    def check_token_alive(self, token):
+        result = self.check_token_is_alive(token)
+        assert result is True, f'Expected token to be alive, but it is not.\n{self.curl}'
+
+    @allure.step('Check token is not alive')
+    def check_token_not_alive(self, token):
+        result = self.check_token_is_alive(token)
+        assert result is False, f'Expected token to be dead, but it is alive.\n{self.curl}'
+
 
 def get_token(name='svetlana_gavs'):
     auth = Authorize()
